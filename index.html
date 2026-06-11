@@ -194,16 +194,6 @@
     .nav-cta::after { display: none !important; }
     .nav-cta:hover { background: var(--accent-deep) !important; transform: translateY(-1px); }
 
-    .nav-admin-link {
-      font-size: 0.75rem !important;
-      color: var(--text-light) !important;
-      font-weight: 500 !important;
-      letter-spacing: 0.04em;
-      transition: color var(--transition);
-    }
-    .nav-admin-link:hover { color: var(--accent-deep) !important; }
-    .nav-admin-link::after { display: none !important; }
-
     /* Hamburger */
     .hamburger {
       display: none;
@@ -1667,7 +1657,6 @@
           <span class="cart-count" id="cartCount">0</span>
         </button>
         <a href="#menu" class="nav-cta" onclick="scrollToMenu()">Order Now</a>
-        <a href="#" class="nav-admin-link" onclick="event.preventDefault(); openAdminLogin()">&#x1F511; Admin</a>
       </nav>
       <div class="hamburger" id="hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -1681,7 +1670,6 @@
     <a href="#menu" onclick="closeMobileMenu()">Menu</a>
     <a href="#about" onclick="closeMobileMenu()">About</a>
     <a href="#" onclick="closeMobileMenu(); openCart()">&#x1F6D2; Keranjang</a>
-    <a href="#" onclick="closeMobileMenu(); openAdminLogin()">&#x1F511; Admin</a>
   </div>
 
   <!-- SHOP VIEW -->
@@ -2131,20 +2119,20 @@
        PRODUCTS
     ═══════════════════════════════════════ */
     const products = [
-      { id: 1, name: "Daifuku Strawberry", desc: "A whole fresh strawberry wrapped in sweet red bean paste and pillowy mochi — the classic Japanese treat, made local.", price: 7000, category: "daifuku", categoryLabel: "Mochi Daifuku", badge: "Best Seller", img: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&h=500&fit=crop" },
-      { id: 2, name: "Daifuku Matcha", desc: "Ceremonial-grade matcha mochi shell filled with a juicy whole strawberry — an elegant East-meets-East creation.", price: 7000, category: "daifuku", categoryLabel: "Mochi Daifuku", img: "https://images.unsplash.com/photo-1582192730841-2a682d7375f9?w=500&h=500&fit=crop" },
-      { id: 3, name: "Cream Oreo", desc: "Crunchy Oreo cookie pieces folded into vanilla cream, wrapped in a soft mochi shell — irresistible.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", badge: "Favorit", img: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=500&h=500&fit=crop" },
-      { id: 4, name: "Cream Mangga", desc: "Sweet Harum Manis mango cream filling in a golden-tinted mochi shell — tropical bliss in every bite.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=500&fit=crop" },
-      { id: 5, name: "Cream Beng-Beng", desc: "Indonesia's beloved Beng-Beng chocolate wafer, crumbled into cream and encased in a pillowy mochi shell.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", badge: "Lokal Favorit", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&h=500&fit=crop" },
-      { id: 6, name: "Cream Melon", desc: "Refreshing melon cream filling in a light, airy mochi shell — a cool and sweet treat for any time.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", img: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&h=500&fit=crop" },
-      { id: 7, name: "Cream Strawberry", desc: "Creamy strawberry milk filling in a blush-pink shell — smooth, sweet, and utterly irresistible.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&h=500&fit=crop" },
-      { id: 8, name: "Brownies Ketan Hitam Original", desc: "Dense, fudgy brownies made from premium black glutinous rice — naturally gluten-free and deeply chocolatey.", price: 3000, category: "brownies", categoryLabel: "Brownies", badge: "Terlaris", img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&h=500&fit=crop" },
+      { id: 1, name: "Daifuku Strawberry", desc: "A whole fresh strawberry wrapped in sweet red bean paste and pillowy mochi — the classic Japanese treat, made local.", price: 7000, category: "daifuku", categoryLabel: "Mochi Daifuku", img: "Strawberry Daifuku.png" },
+      { id: 2, name: "Daifuku Matcha", desc: "Ceremonial-grade matcha mochi shell filled with a juicy whole strawberry — an elegant East-meets-East creation.", price: 7000, category: "daifuku", categoryLabel: "Mochi Daifuku", badge: "Favorit", img: "Matcha.png" },
+      { id: 3, name: "Cream Oreo", desc: "Crunchy Oreo cookie pieces folded into vanilla cream, wrapped in a soft mochi shell — irresistible.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", badge: "Best Seller", img: "Oreo.png" },
+      { id: 4, name: "Cream Mangga", desc: "Sweet Harum Manis mango cream filling in a golden-tinted mochi shell — tropical bliss in every bite.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", badge: "Favorit", img: "Mango.png" },
+      { id: 5, name: "Cream Beng-Beng", desc: "Indonesia's beloved Beng-Beng chocolate wafer, crumbled into cream and encased in a pillowy mochi shell.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", hidden: true, img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&h=500&fit=crop" },
+      { id: 6, name: "Cream Melon", desc: "Refreshing melon cream filling in a light, airy mochi shell — a cool and sweet treat for any time.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", img: "Melon.png" },
+      { id: 7, name: "Cream Strawberry", desc: "Creamy strawberry milk filling in a blush-pink shell — smooth, sweet, and utterly irresistible.", price: 7000, category: "cream", categoryLabel: "Mochi Cream", img: "Strawberry Cream.png" },
+      { id: 8, name: "Brownies Ketan Hitam Original", desc: "Dense, fudgy brownies made from premium black glutinous rice — naturally gluten-free and deeply chocolatey.", price: 3000, category: "brownies", categoryLabel: "Brownies", img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&h=500&fit=crop" },
       { id: 9, name: "Brownies Ketan Hitam Keju", desc: "Our signature black glutinous rice brownies topped with a generous layer of melted cheddar cheese.", price: 5000, category: "brownies", categoryLabel: "Brownies", img: "https://images.unsplash.com/photo-1560180474-e8563fd75bab?w=500&h=500&fit=crop" },
-      { id: 10, name: "Risoles Mayonnaise", desc: "Crispy golden shell filled with creamy chicken, vegetables, and tangy mayonnaise — a crowd favorite.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&h=500&fit=crop" },
-      { id: 11, name: "Risoles Ragout", desc: "Classic ragout filling with tender chicken and mixed vegetables in a creamy, savory sauce.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&h=500&fit=crop" },
-      { id: 12, name: "Risoles Mac & Cheese", desc: "Al dente macaroni tossed in a three-cheese sauce, breaded and deep-fried to golden perfection.", price: 4000, category: "risoles", categoryLabel: "Risoles", badge: "Premium", img: "https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?w=500&h=500&fit=crop" },
-      { id: 13, name: "Risoles Pisang Coklat", desc: "Sweet banana wrapped in a crispy shell, drizzled with rich chocolate — a snack-time crowd pleaser.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=500&h=500&fit=crop" },
-      { id: 14, name: "Risoles Matcha", desc: "A matcha twist on the classic risoles — creamy matcha filling in a perfectly crispy, golden shell.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?w=500&h=500&fit=crop" },
+      { id: 10, name: "Risoles Mayonnaise", desc: "Crispy golden shell filled with creamy chicken, vegetables, and tangy mayonnaise — a crowd favorite.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "RisolMayo.png" },
+      { id: 11, name: "Risoles Ragout", desc: "Classic ragout filling with tender chicken and mixed vegetables in a creamy, savory sauce.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "RisolRagout.png" },
+      { id: 12, name: "Risoles Mac & Cheese", desc: "Al dente macaroni tossed in a three-cheese sauce, breaded and deep-fried to golden perfection.", price: 4000, category: "risoles", categoryLabel: "Risoles", badge: "Premium", img: "RisolMacNCheese.png" },
+      { id: 13, name: "Risoles Pisang Coklat", desc: "Sweet banana wrapped in a crispy shell, drizzled with rich chocolate — a snack-time crowd pleaser.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "RisolPisangCoklat.png" },
+      { id: 14, name: "Risoles Matcha", desc: "A matcha twist on the classic risoles — creamy matcha filling in a perfectly crispy, golden shell.", price: 3500, category: "risoles", categoryLabel: "Risoles", img: "RisolMatcha.png" },
     ];
 
     /* ═══════════════════════════════════════
@@ -2168,9 +2156,11 @@
       var grid = document.getElementById('menuGrid');
       if (!grid) return;
 
+      // TAMBAHKAN BARIS INI di awal filter
       var filtered = filter === 'all'
-        ? products
-        : products.filter(function(p) { return p.category === filter; });
+        ? products.filter(function(p) { return !p.hidden; })
+        : products.filter(function(p) { return p.category === filter && !p.hidden; });
+
 
       grid.innerHTML = filtered.map(function(p, i) {
         return '<article class="card fade-in" data-category="' + p.category + '" style="transition-delay:' + ((i % 4) * 0.08) + 's">' +
@@ -2557,7 +2547,14 @@
         }
         actions += '<button class="btn-status btn-delete-order" onclick="deleteOrder(\'' + order.id + '\')">&#x1F5D1; Hapus</button>';
 
-        var proofHtml = order.payment_proof ? '<div class="proof-section"><span style="font-size:0.78rem;font-weight:700;color:var(--text-secondary);">Bukti Pembayaran:</span><a href="' + order.payment_proof + '" target="_blank"><img src="' + order.payment_proof + '" alt="Bukti" style="margin-top:8px;max-width:200px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;" /></a></div>' : '';
+        var proofHtml = order.payment_proof
+          ? '<div class="proof-section">' +
+            '<span style="font-size:0.78rem;font-weight:700;color:var(--text-secondary);">Bukti Pembayaran:</span>' +
+            '<img src="' + order.payment_proof + '" alt="Bukti" ' +
+            'style="margin-top:8px;max-width:200px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;" ' +
+            'onclick="window.open(\'' + order.payment_proof + '\',\'_blank\',\'width=800,height=800\')" />' +
+            '</div>'
+          : '';
 
         var notesHtml = (order.customer && order.customer.notes) ? '<br><span>&#x1F4DD; ' + order.customer.notes + '</span>' : '';
 
@@ -2684,6 +2681,19 @@
     } catch (err) {
       console.error('Init error:', err);
     }
+
+        /* ═══════════════════════════════════════
+      AUTO ADMIN VIA URL
+    ═══════════════════════════════════════ */
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var adminKey = params.get('admin');
+      if (adminKey === 'mochi123') {
+        setTimeout(function() { showAdminDashboard(); }, 500);
+      } else if (adminKey !== null) {
+        setTimeout(function() { openAdminLogin(); }, 500);
+      }
+    })();
   </script>
 
 </body>
