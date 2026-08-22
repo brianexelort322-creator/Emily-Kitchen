@@ -579,6 +579,7 @@
       cursor: pointer;
       padding: 0;
       transition: gap var(--transition), color var(--transition);
+    }
     .card-sold-out {
       background: #c0392b !important;
       color: #fff !important;
@@ -1944,14 +1945,14 @@
         <button class="admin-tab" data-filter="selesai" onclick="filterAdminOrders('selesai', this)">&#x1F389; Selesai</button>
       </div>
       <div id="adminOrders"></div>
-          <!-- SECTION KELOLA PRODUK -->
-      <div class="admin-orders-section">
-        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:600;margin-bottom:1.5rem;">
-          &#x1F4E6; Kelola Produk
-        </h2>
-        <div id="adminProducts"></div>
-      </div>
-    </div>   <!-- ini yang menutup adminView -->
+
+      <!-- SECTION KELOLA PRODUK -->
+      <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:600;margin:2rem 0 1.5rem;">
+        &#x1F4E6; Kelola Produk
+      </h2>
+      <div id="adminProducts"></div>
+    </div>   <!-- tutup admin-orders-section -->
+  </div>     <!-- tutup adminView -->
 
   <!-- CART SIDEBAR -->
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
@@ -2569,20 +2570,19 @@
       }
     }
 
-    function showAdminDashboard() {
-      async function showAdminDashboard() {
-        document.getElementById('shopView').classList.add('hidden');
-        document.getElementById('adminView').classList.add('active');
-        document.body.style.overflow = '';
-        adminFilter = 'semua';
-        document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
-        document.querySelector('.admin-tab[data-filter="semua"]').classList.add('active');
-        await loadProductSettings();
-        renderAdminStats();
-        renderAdminOrders();
-        renderAdminProducts();
-        window.scrollTo(0, 0);
-      }
+    async function showAdminDashboard() {
+      document.getElementById('shopView').classList.add('hidden');
+      document.getElementById('adminView').classList.add('active');
+      document.body.style.overflow = '';
+      adminFilter = 'semua';
+      document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelector('.admin-tab[data-filter="semua"]').classList.add('active');
+      await loadProductSettings();
+      renderAdminStats();
+      renderAdminOrders();
+      renderAdminProducts();
+      window.scrollTo(0, 0);
+    }
 
     function backToShop() {
       document.getElementById('adminView').classList.remove('active');
@@ -2590,7 +2590,6 @@
       renderProducts();
       renderCart();
     }
-
     function renderAdminStats() {
       var total = orders.length;
       var pending = orders.filter(function(o) { return o.status === 'menunggu'; }).length;
