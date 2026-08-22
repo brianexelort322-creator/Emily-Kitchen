@@ -579,6 +579,14 @@
       cursor: pointer;
       padding: 0;
       transition: gap var(--transition), color var(--transition);
+    .card-sold-out {
+      background: #c0392b !important;
+      color: #fff !important;
+    }
+    .card-sold-btn {
+      color: var(--text-light) !important;
+      cursor: not-allowed !important;
+      opacity: 0.6;
     }
     .card-order:hover { gap: 10px; color: var(--text-primary); }
     .card-order .arr { font-size: 0.9rem; transition: transform var(--transition); }
@@ -1936,8 +1944,14 @@
         <button class="admin-tab" data-filter="selesai" onclick="filterAdminOrders('selesai', this)">&#x1F389; Selesai</button>
       </div>
       <div id="adminOrders"></div>
-    </div>
-  </div>
+          <!-- SECTION KELOLA PRODUK -->
+      <div class="admin-orders-section">
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:600;margin-bottom:1.5rem;">
+          &#x1F4E6; Kelola Produk
+        </h2>
+        <div id="adminProducts"></div>
+      </div>
+    </div>   <!-- ini yang menutup adminView -->
 
   <!-- CART SIDEBAR -->
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
@@ -2147,26 +2161,121 @@
     function formatRupiah(n) {
       return 'Rp ' + n.toLocaleString('id-ID');
     }
-
+    /* ═══════════════════════════════════════
+       PRODUCT SETTINGS FROM SUPABASE
+    ═══════════════════════════════════════ */
+    let productSettings = {};
+    
+    async function loadProductSettings() {
+      var sb = getSupabase();
+      if (!sb) return;
+    
+      var result = await sb
+        .from('product_settings')
+        .select('*');
+    
+      if (result.error) {
+        console.error('Gagal load product settings:', result.error);
+        return;
+      }
+    
+      result.data.forEach(function(row) {
+        productSettings[row.product_id] = {
+          hidden: row.hidden,
+          soldOut: row.sold_out
+        };
+      });
+    }
+    
+    async function toggleProductHidden(productId, currentVal) {
+      var sb = getSupabase();
+      if (!sb) { showToast('Database tidak tersedia'); return; }
+    
+      var newVal = !currentVal;
+    
+      var result = await sb
+        .from('product_settings')
+        .update({ hidden: newVal })
+        .eq('product_id', productId);
+    
+      if (result.error) {
+        console.error(result.error);
+        showToast('Gagal update');
+        return;
+      }
+    
+      productSettings[productId] = productSettings[productId] || {};
+      productSettings[productId].hidden = newVal;
+    
+      showToast(productId === productId ? 'Produk di-' + (newVal ? 'sembunyikan' : 'tampilkan') : 'Updated');
+      renderAdminProducts();
+    }
+    
+    async function toggleProductSoldOut(productId, currentVal) {
+      var sb = getSupabase();
+      if (!sb) { showToast('Database tidak tersedia'); return; }
+    
+      var newVal = !currentVal;
+    
+      var result = await sb
+        .from('product_settings')
+        .update({ sold_out: newVal })
+        .eq('product_id', productId);
+    
+      if (result.error) {
+        console.error(result.error);
+        showToast('Gagal update');
+        return;
+      }
+    
+      productSettings[productId] = productSettings[productId] || {};
+      productSettings[productId].soldOut = newVal;
+    
+      showToast('Produk di-' + (newVal ? 'tandai sold out' : 'buka kembali'));
+      renderAdminProducts();
+    }
     /* ═══════════════════════════════════════
        RENDER PRODUCTS
     ═══════════════════════════════════════ */
-    function renderProducts(filter) {
+    async function renderProducts(filter) {
+      // Load settings dulu jika belum ada
+      if (Object.keys(productSettings).length === 0) {
+        await loadProductSettings();
+      }
+    
       filter = filter || 'all';
       var grid = document.getElementById('menuGrid');
       if (!grid) return;
-
-      // TAMBAHKAN BARIS INI di awal filter
+    
       var filtered = filter === 'all'
-        ? products.filter(function(p) { return !p.hidden; })
-        : products.filter(function(p) { return p.category === filter && !p.hidden; });
-
-
+        ? products.filter(function(p) {
+            var s = productSettings[p.id];
+            return !s || !s.hidden;
+          })
+        : products.filter(function(p) {
+            var s = productSettings[p.id];
+            return p.category === filter && (!s || !s.hidden);
+          });
+    
       grid.innerHTML = filtered.map(function(p, i) {
+        var s = productSettings[p.id] || {};
+        var isSoldOut = s.soldOut;
+    
+        var badgeHtml = '';
+        if (isSoldOut) {
+          badgeHtml = '<span class="card-badge card-sold-out">Sold Out</span>';
+        } else if (p.badge) {
+          badgeHtml = '<span class="card-badge">' + p.badge + '</span>';
+        }
+    
+        var btnHtml = isSoldOut
+          ? '<button class="card-order card-sold-btn" disabled>Sold Out</button>'
+          : '<button class="card-order" onclick="addToCart(' + p.id + ')">Add to Cart <span class="arr">&rarr;</span></button>';
+    
         return '<article class="card fade-in" data-category="' + p.category + '" style="transition-delay:' + ((i % 4) * 0.08) + 's">' +
           '<div class="card-img-wrap">' +
             '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" />' +
-            (p.badge ? '<span class="card-badge">' + p.badge + '</span>' : '') +
+            badgeHtml +
           '</div>' +
           '<div class="card-body">' +
             '<span class="card-flavor">' + p.categoryLabel + '</span>' +
@@ -2174,12 +2283,12 @@
             '<p class="card-desc">' + p.desc + '</p>' +
             '<div class="card-footer">' +
               '<span class="card-price">' + formatRupiah(p.price) + '</span>' +
-              '<button class="card-order" onclick="addToCart(' + p.id + ')">Add to Cart <span class="arr">&rarr;</span></button>' +
+              btnHtml +
             '</div>' +
           '</div>' +
         '</article>';
       }).join('');
-
+    
       observeFadeIns();
     }
 
@@ -2461,16 +2570,19 @@
     }
 
     function showAdminDashboard() {
-      document.getElementById('shopView').classList.add('hidden');
-      document.getElementById('adminView').classList.add('active');
-      document.body.style.overflow = '';
-      adminFilter = 'semua';
-      document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
-      document.querySelector('.admin-tab[data-filter="semua"]').classList.add('active');
-      renderAdminStats();
-      renderAdminOrders();
-      window.scrollTo(0, 0);
-    }
+      async function showAdminDashboard() {
+        document.getElementById('shopView').classList.add('hidden');
+        document.getElementById('adminView').classList.add('active');
+        document.body.style.overflow = '';
+        adminFilter = 'semua';
+        document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelector('.admin-tab[data-filter="semua"]').classList.add('active');
+        await loadProductSettings();
+        renderAdminStats();
+        renderAdminOrders();
+        renderAdminProducts();
+        window.scrollTo(0, 0);
+      }
 
     function backToShop() {
       document.getElementById('adminView').classList.remove('active');
@@ -2593,7 +2705,39 @@
       showToast('Pesanan ' + orderId + ' dihapus');
       renderAdminOrders();
     }
-
+/* ═══════════════════════════════════════
+   ADMIN KELOLA PRODUK
+═══════════════════════════════════════ */
+    async function renderAdminProducts() {
+      var container = document.getElementById('adminProducts');
+      if (!container) return;
+    
+      if (Object.keys(productSettings).length === 0) {
+        await loadProductSettings();
+      }
+    
+      container.innerHTML = products.map(function(p) {
+        var s = productSettings[p.id] || { hidden: false, soldOut: false };
+        var isHidden = s.hidden;
+        var isSoldOut = s.soldOut;
+    
+        return '<div class="order-card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">' +
+          '<img src="' + p.img + '" style="width:56px;height:56px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--border);flex-shrink:0;" />' +
+          '<div style="flex:1;min-width:150px;">' +
+            '<div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">' + p.name + '</div>' +
+            '<div style="font-size:0.8rem;color:var(--text-secondary);">' + formatRupiah(p.price) + ' &bull; ' + p.categoryLabel + '</div>' +
+          '</div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+            '<button class="btn-status ' + (isHidden ? 'btn-confirm' : 'btn-delete-order') + '" onclick="toggleProductHidden(' + p.id + ',' + isHidden + ')">' +
+              (isHidden ? '&#x1F441; Tampilkan' : '&#x1F441; Sembunyikan') +
+            '</button>' +
+            '<button class="btn-status ' + (isSoldOut ? 'btn-cancel-order' : 'btn-confirm') + '" onclick="toggleProductSoldOut(' + p.id + ',' + isSoldOut + ')">' +
+              (isSoldOut ? '&#x1F534; Buka Stok' : '&#x1F7E1; Sold Out') +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
     /* ═══════════════════════════════════════
        TOAST
     ═══════════════════════════════════════ */
@@ -2674,10 +2818,11 @@
        INIT — INI YANG PALING PENTING
     ═══════════════════════════════════════ */
     try {
-      renderProducts();
-      renderCart();
-      observeFadeIns();
-      console.log('Emily Kitchen loaded successfully');
+      loadProductSettings().then(function() {
+        renderProducts();
+        renderCart();
+        observeFadeIns();
+      });
     } catch (err) {
       console.error('Init error:', err);
     }
